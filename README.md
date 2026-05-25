@@ -48,10 +48,16 @@ All calculations are implemented using DAX, including:
 
 ---
 
-## Dashboard Preview
+## Dashboard Preview + Data Model
 
-Screenshots of the main dashboard pages are available in the `/screenshots` folder.  
-These previews allow you to explore the visual layout and insights without opening Power BI.
+
+![Overview](screenshots/01-Overview.png)
+![Customers](screenshots/02-Customers.png)
+![Products](screenshots/03-Products.png)
+![Delivery](screenshots/04-Delivery.png)
+![Payments](screenshots/05-Payments.png)
+![Model](screenshots/06-Model.png)
+
 
 ---
 
