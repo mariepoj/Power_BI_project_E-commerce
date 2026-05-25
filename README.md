@@ -69,7 +69,7 @@ All calculations are implemented using DAX, including:
 
 ---
 
-## 👤 Author
+## Author
 
-Created by **Marie**  
+Created by **Marie Pojarová**  
 Data Analyst focused on Power BI, data modeling, and clean, user‑friendly dashboard design.
