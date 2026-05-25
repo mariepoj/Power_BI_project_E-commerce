@@ -1,0 +1,326 @@
+table Orders
+	lineageTag: bfa6d0f8-807c-453e-94ac-f9c2d57b23df
+
+	measure 'Total Order' = COUNTROWS(Orders)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 0325836b-53fc-4ade-9855-da46835c1bc0
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Average Order' = DIVIDE([Total Revenue], [Total Order])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: bd587cba-70b5-496d-b918-b2aa19f2d17b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Average Review' = AVERAGE(Order_Reviews[review_score])
+		lineageTag: 15eccbec-61a7-4f46-a960-8866f791bbb2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Delivery Time (days)' = AVERAGE(Orders[delivery_days])
+		lineageTag: 4804c0ad-f69e-4de7-bb4c-0b5c69d52d0d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Revenue' =
+			
+			SUM(Order_Items[price]) + SUM(Order_Items[freight_value])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 78d00f1a-bc95-49a6-a69a-7b150d05a2e0
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Avg Review Score' =
+			
+			AVERAGEX(
+			    CALCULATETABLE(
+			        Order_Reviews,
+			        RELATEDTABLE(Order_Items)
+			    ),
+			    Order_Reviews[review_score]
+			)
+		lineageTag: e7af7700-968d-40f0-a374-3b3ec4054258
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Delivery Time' =
+			
+			CALCULATE(
+			    AVERAGE(Orders[delivery_days]),
+			    NOT(ISBLANK(Orders[delivery_days]))
+			)
+		lineageTag: c8fd0e54-cb3e-4d5b-bd1a-8df53d43a8e0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Estimated Delivery Time' = ```
+			
+			AVERAGE(Orders[estimated_delivery_days])
+			
+			```
+		lineageTag: d1755b47-7e7d-4cac-8bf9-aec1fe22dc22
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Delay' =
+			
+			AVERAGE(Orders[delay_days])
+		lineageTag: 65b90bfb-56a4-48af-8447-62cba1b20dd7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Late Deliveries %' =
+			
+			DIVIDE(
+			    SUM(Orders[is_late]),
+			    COUNTROWS(Orders)
+			)
+		lineageTag: b1b76e9c-eae0-42cb-9339-62932e7f0cd3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Customer Growth' =
+			
+			DISTINCTCOUNT(Orders[customer_id])
+		formatString: 0
+		lineageTag: e3f998ee-832a-41a1-9209-51d0fbd795e0
+
+	measure 'Customer Growth Cumulative' =
+			
+			CALCULATE(
+			    [Customer Growth],
+			    FILTER(
+			        ALL(Calendar[Date]),
+			        Calendar[Date] <= MAX(Calendar[Date])
+			    )
+			)
+		formatString: 0
+		lineageTag: 1afbabcd-f848-4e6c-bd26-5745266f86d9
+
+	column order_id
+		dataType: string
+		lineageTag: 02edcd81-373b-4b2c-89cf-cd26c7da3bec
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 30ec900a-8ca9-4cb5-9ad6-ea5c86c0c88e
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: 92cf6988-74f3-4285-b533-a1b8669dda50
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_purchase_timestamp
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: a87bfba5-9152-4221-aed1-b3cde3b5dd0f
+		summarizeBy: none
+		sourceColumn: order_purchase_timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_approved_at
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 00d83cf4-bda3-4722-addd-665e312ca90c
+		summarizeBy: none
+		sourceColumn: order_approved_at
+
+		variation Variace
+			isDefault
+			relationship: 2f2ebf68-d2c4-4ea7-8bc6-5de4b733ec03
+			defaultHierarchy: LocalDateTable_6853a356-f004-4d07-bf50-7cb248402f1f.'Hierarchie dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_delivered_carrier_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7ffbbde9-0f54-4b57-85fa-2f73d963343c
+		summarizeBy: none
+		sourceColumn: order_delivered_carrier_date
+
+		variation Variace
+			isDefault
+			relationship: 6a88bd78-c9f0-457f-9de2-e8e9ce3503de
+			defaultHierarchy: LocalDateTable_179ac232-f28e-4aff-b126-2cc2b3809b69.'Hierarchie dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_delivered_customer_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: db126b50-82fd-4b14-846c-bbe279ab1c5d
+		summarizeBy: none
+		sourceColumn: order_delivered_customer_date
+
+		variation Variace
+			isDefault
+			relationship: b9a37eab-d67a-429c-8929-17be7013627c
+			defaultHierarchy: LocalDateTable_79226f83-8c3b-40d2-95eb-4c3e4d6b2b8c.'Hierarchie dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_estimated_delivery_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 24d6a967-579c-42e2-9ea3-9e762c05cffa
+		summarizeBy: none
+		sourceColumn: order_estimated_delivery_date
+
+		variation Variace
+			isDefault
+			relationship: 88d4fc85-8dc5-425f-bfb7-0b822775f75f
+			defaultHierarchy: LocalDateTable_dfa7373b-6a44-4476-babd-27fbb5a44e31.'Hierarchie dat'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column customer_unique_id = ```
+			
+			RELATED(Customers[customer_unique_id])
+			
+			```
+		lineageTag: 09b413cc-1630-4b46-9812-e7de6fafb4e4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_days =
+			
+			DATEDIFF(
+			    Orders[order_purchase_timestamp],
+			    Orders[order_delivered_customer_date],
+			    DAY
+			)
+		formatString: 0
+		lineageTag: bbee4911-532d-4893-8fd8-23d419f4460d
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Orders","TableItemName":"Delivery Days (Bins)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column estimated_delivery_days =
+			
+			DATEDIFF(
+			    Orders[order_purchase_timestamp],
+			    Orders[order_estimated_delivery_date],
+			    DAY
+			)
+		formatString: 0
+		lineageTag: fbbdd28b-da13-4aa5-b6aa-97697749d232
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column delay_days =
+			
+			DATEDIFF(
+			    Orders[order_estimated_delivery_date],
+			    Orders[order_delivered_customer_date],
+			    DAY
+			)
+		formatString: 0
+		lineageTag: c76733d5-eb3f-4c4b-b3de-528404793115
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_late =
+			
+			IF(
+			    Orders[order_delivered_customer_date] > Orders[order_estimated_delivery_date],
+			    1,
+			    0
+			)
+		formatString: 0
+		lineageTag: a0bfae9e-f1f7-435b-b8d1-4051accfa374
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Delivery Days (Bins)' =
+			IF(
+				ISBLANK('Orders'[delivery_days]),
+				BLANK(),
+				INT('Orders'[delivery_days])
+			)
+		formatString: 0
+		lineageTag: 06ced29b-faf6-4bd3-b3cb-e422b15d4710
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Orders"
+				          }
+				        },
+				        "Property": "delivery_days"
+				      }
+				    }
+				  ],
+				  "binningMetadata": {
+				    "binSize": {
+				      "value": 1.0,
+				      "unit": 0
+				    }
+				  }
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"o","Entity":"Orders"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"o"}},"Property":"delivery_days"}}],"BinItem":{"Expression":{"Floor":{"Expression":{"Column":{"Expression":{"SourceRef":{"Source":"o"}},"Property":"delivery_days"}},"Size":1.0}}}}
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_orders_dataset.csv"),[Delimiter=",", Columns=8, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"extrahováno datum (bez času)" = Table.TransformColumns(#"Záhlaví se zvýšenou úrovní", {{"order_purchase_timestamp", each Text.BeforeDelimiter(_, " "), type text}}),
+				    #"Změněný typ na datum" = Table.TransformColumnTypes(#"extrahováno datum (bez času)",{{"order_purchase_timestamp", type date}}),
+				    #"Byl extrahován text před oddělovačem." = Table.TransformColumns(#"Změněný typ na datum", {{"order_approved_at", each Text.BeforeDelimiter(_, " "), type text}}),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Byl extrahován text před oddělovačem.",{{"order_approved_at", type date}}),
+				    #"Byl extrahován text před oddělovačem.1" = Table.TransformColumns(#"Změněný typ", {{"order_delivered_carrier_date", each Text.BeforeDelimiter(_, " "), type text}}),
+				    #"Změněný typ1" = Table.TransformColumnTypes(#"Byl extrahován text před oddělovačem.1",{{"order_delivered_carrier_date", type date}}),
+				    #"Byl extrahován text před oddělovačem.2" = Table.TransformColumns(#"Změněný typ1", {{"order_delivered_customer_date", each Text.BeforeDelimiter(_, " "), type text}}),
+				    #"Změněný typ2" = Table.TransformColumnTypes(#"Byl extrahován text před oddělovačem.2",{{"order_delivered_customer_date", type date}}),
+				    #"Byl extrahován text před oddělovačem.3" = Table.TransformColumns(#"Změněný typ2", {{"order_estimated_delivery_date", each Text.BeforeDelimiter(_, " "), type text}}),
+				    #"Změněný typ3" = Table.TransformColumnTypes(#"Byl extrahován text před oddělovačem.3",{{"order_estimated_delivery_date", type date}}),
+				
+				    // 🔥 Nový krok – odstranění řádků, kde je null v libovolném sloupci
+				    #"Bez null" = Table.SelectRows(#"Změněný typ3", each List.NonNullCount(Record.FieldValues(_)) = Table.ColumnCount(#"Změněný typ3"))
+				in
+				    #"Bez null"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

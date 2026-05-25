@@ -1,0 +1,67 @@
+relationship c67e16ea-3e10-4946-a896-1a32968430db
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Order_Reviews.review_creation_date
+	toColumn: LocalDateTable_195be60d-89bb-4031-a04f-78ddf8e1153b.Date
+
+relationship a41fc6f5-50d0-4e38-9a11-44de0150d986
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Order_Reviews.review_answer_timestamp
+	toColumn: LocalDateTable_bc00ba79-c175-48eb-a6a3-4614dc7b7e27.Date
+
+relationship 6a88bd78-c9f0-457f-9de2-e8e9ce3503de
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.order_delivered_carrier_date
+	toColumn: LocalDateTable_179ac232-f28e-4aff-b126-2cc2b3809b69.Date
+
+relationship b9a37eab-d67a-429c-8929-17be7013627c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.order_delivered_customer_date
+	toColumn: LocalDateTable_79226f83-8c3b-40d2-95eb-4c3e4d6b2b8c.Date
+
+relationship 88d4fc85-8dc5-425f-bfb7-0b822775f75f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.order_estimated_delivery_date
+	toColumn: LocalDateTable_dfa7373b-6a44-4476-babd-27fbb5a44e31.Date
+
+relationship AutoDetected_25e70561-77dd-4e97-b252-901701bc0b8d
+	fromColumn: Order_Items.order_id
+	toColumn: Orders.order_id
+
+relationship AutoDetected_7200faa1-9951-4319-ba4a-78dd1c4391a8
+	fromColumn: Order_Payments.order_id
+	toColumn: Orders.order_id
+
+relationship AutoDetected_150c8c23-205d-4b64-a0e5-17e3037cf562
+	fromColumn: Order_Reviews.order_id
+	toColumn: Orders.order_id
+
+relationship AutoDetected_f04a7b18-6663-4899-ac9e-7a46d6f3aee0
+	fromColumn: Order_Items.product_id
+	toColumn: Products.product_id
+
+relationship AutoDetected_84f3e411-fd52-49ce-9ff3-fa3ca6655ab5
+	fromColumn: Order_Items.seller_id
+	toColumn: Sellers.seller_id
+
+relationship be02351f-0b28-274b-05b7-3d073443432a
+	fromColumn: Customers.customer_zip_code_prefix
+	toColumn: Geolocation_Deduplicated.geolocation_zip_code_prefix
+
+relationship 2f2ebf68-d2c4-4ea7-8bc6-5de4b733ec03
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.order_approved_at
+	toColumn: LocalDateTable_6853a356-f004-4d07-bf50-7cb248402f1f.Date
+
+relationship 7c981414-ef5e-6d3b-3679-33146edd733d
+	fromColumn: Orders.order_purchase_timestamp
+	toColumn: Calendar.Date
+
+relationship c64d2dd7-c3c2-c55d-8b89-23bd72da6005
+	crossFilteringBehavior: bothDirections
+	fromColumn: Orders.customer_id
+	toColumn: Customers.customer_id
+
+relationship AutoDetected_ea98f6d3-b62f-442d-b1a0-d48fef9c1d31
+	fromColumn: Products.product_category_name
+	toColumn: product_category_name_translation.product_category_name
+

@@ -1,0 +1,100 @@
+table Order_Payments
+	lineageTag: e17c0745-0034-4f04-8afa-f81e39744176
+
+	measure 'Total Payments' =
+			
+			COUNTROWS(Order_Payments)
+		formatString: 0
+		lineageTag: cb96b11d-b90d-455e-8187-340a9818f5ee
+
+	measure 'Total Payment Value' = ```
+			
+			SUM(Order_Payments[payment_value])
+			
+			```
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: ebad9f11-b1a9-4377-91b4-b9a87fccdbd5
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Avg Payment Value' = ```
+			
+			AVERAGE(Order_Payments[payment_value])
+			
+			```
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 553b09eb-3666-409b-b57d-73262287d230
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure '% Installments' =
+			
+			DIVIDE(
+			    CALCULATE(COUNTROWS(Order_Payments), Order_Payments[payment_installments] > 1),
+			    [Total Payments]
+			)
+		lineageTag: 243901d6-6ddf-4a11-a15e-d0e76b082778
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column order_id
+		dataType: string
+		lineageTag: 21999937-2aff-4384-8d3b-4cac26a0d5ce
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_sequential
+		dataType: int64
+		formatString: 0
+		lineageTag: 424c6756-2c47-4a9c-b64d-62b97c2d95c6
+		summarizeBy: sum
+		sourceColumn: payment_sequential
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_type
+		dataType: string
+		lineageTag: c2e983c4-22c3-4525-ba63-1fe45ea3c892
+		summarizeBy: none
+		sourceColumn: payment_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_installments
+		dataType: int64
+		formatString: 0
+		lineageTag: 9684f9db-a7a4-4f5c-a7d8-be893d54757d
+		summarizeBy: sum
+		sourceColumn: payment_installments
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_value
+		dataType: decimal
+		formatString: #,0.###############\ "Kč";-#,0.###############\ "Kč";#,0.###############\ "Kč"
+		lineageTag: 573fe339-2409-4692-9a70-0021f98f0fb8
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"cs-CZ"}
+
+	partition Order_Payments = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_order_payments_dataset.csv"),[Delimiter=",", Columns=5, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Záhlaví se zvýšenou úrovní",{{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type text}}),
+				    #"Nahrazená hodnota . na ," = Table.ReplaceValue(#"Změněný typ",".",",",Replacer.ReplaceText,{"payment_value"}),
+				    #"Změněný typ na pevný počet desetinných" = Table.TransformColumnTypes(#"Nahrazená hodnota . na ,",{{"payment_value", Currency.Type}})
+				in
+				    #"Změněný typ na pevný počet desetinných"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

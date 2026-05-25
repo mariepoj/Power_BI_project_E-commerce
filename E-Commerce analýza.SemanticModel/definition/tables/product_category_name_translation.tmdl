@@ -1,0 +1,34 @@
+table product_category_name_translation
+	lineageTag: 4a395bdb-9369-431a-9146-4c7432078432
+
+	column product_category_name
+		dataType: string
+		lineageTag: ef243d00-8a1e-4b49-b701-0971d1bc04b1
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name_english
+		dataType: string
+		lineageTag: 20c7facc-fdec-432b-b832-abf8f96ff36b
+		summarizeBy: none
+		sourceColumn: product_category_name_english
+
+		annotation SummarizationSetBy = Automatic
+
+	partition product_category_name_translation = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\product_category_name_translation.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Změněný typ" = Table.TransformColumnTypes(Zdroj,{{"Column1", type text}, {"Column2", type text}}),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(#"Změněný typ", [PromoteAllScalars=true]),
+				    #"Změněný typ1" = Table.TransformColumnTypes(#"Záhlaví se zvýšenou úrovní",{{"product_category_name", type text}, {"product_category_name_english", type text}})
+				in
+				    #"Změněný typ1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

@@ -1,0 +1,90 @@
+table Order_Reviews
+	lineageTag: 7ba42600-f4a3-4df7-a9fe-84de7f35c69e
+
+	measure 'Review Count' = COUNT(Order_Reviews[review_id])
+		formatString: 0
+		lineageTag: 64a0a6aa-96a0-4ffe-b72b-896e43704413
+
+	column review_id
+		dataType: string
+		lineageTag: fbcb91b5-956e-46cd-8168-33cf6e457948
+		summarizeBy: none
+		sourceColumn: review_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_id
+		dataType: string
+		lineageTag: 37cc5c72-1ac7-4ba2-8d3d-cae4d3a110a5
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 5bcb6160-5199-4098-9a67-fccc6deb1d19
+		summarizeBy: sum
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_comment_title
+		dataType: string
+		lineageTag: 46e9585d-4a44-4849-9025-b1caf556f02a
+		summarizeBy: none
+		sourceColumn: review_comment_title
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_comment_message
+		dataType: string
+		lineageTag: 76d9f9e3-7cfb-47f7-b210-bc189f662136
+		summarizeBy: none
+		sourceColumn: review_comment_message
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_creation_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5d26ae96-72a0-4cbf-821b-9439ce64b718
+		summarizeBy: none
+		sourceColumn: review_creation_date
+
+		variation Variace
+			isDefault
+			relationship: c67e16ea-3e10-4946-a896-1a32968430db
+			defaultHierarchy: LocalDateTable_195be60d-89bb-4031-a04f-78ddf8e1153b.'Hierarchie dat'
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_answer_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 715e6f71-13a3-4098-8fcd-eb51e7c6b1f7
+		summarizeBy: none
+		sourceColumn: review_answer_timestamp
+
+		variation Variace
+			isDefault
+			relationship: a41fc6f5-50d0-4e38-9a11-44de0150d986
+			defaultHierarchy: LocalDateTable_bc00ba79-c175-48eb-a6a3-4614dc7b7e27.'Hierarchie dat'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Order_Reviews = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_order_reviews_dataset.csv"),[Delimiter=",", Columns=7, Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Záhlaví se zvýšenou úrovní",{{"review_id", type text}, {"order_id", type text}, {"review_score", Int64.Type}, {"review_comment_title", type text}, {"review_comment_message", type text}, {"review_creation_date", type datetime}, {"review_answer_timestamp", type datetime}})
+				in
+				    #"Změněný typ"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

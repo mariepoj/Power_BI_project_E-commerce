@@ -1,0 +1,45 @@
+table 'Customer Segments'
+	isHidden
+	lineageTag: ddb89330-9d8b-445f-89e1-70973ab349ab
+
+	measure 'Customer Segment Count' =
+			
+			VAR seg = SELECTEDVALUE('Customer Segments'[Segment])
+			RETURN
+			SWITCH(
+			    seg,
+			    "1 order", CALCULATE(DISTINCTCOUNT(Customers[customer_unique_id]), Customers[Order Count] = 1),
+			    "2 orders", CALCULATE(DISTINCTCOUNT(Customers[customer_unique_id]), Customers[Order Count] = 2),
+			    "3+ orders", CALCULATE(DISTINCTCOUNT(Customers[customer_unique_id]), Customers[Order Count] >= 3),
+			    0
+			)
+		formatString: 0
+		isHidden
+		lineageTag: 05cfb238-9c36-4223-8661-25d5e4737eec
+
+	column Segment
+		isHidden
+		lineageTag: f8308cc8-9409-4622-85ba-85aa2c025a31
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Segment]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Customer Segments' = calculated
+		mode: import
+		source = ```
+				
+				DATATABLE(
+				    "Segment", STRING,
+				    {
+				        {"1 order"},
+				        {"2 orders"},
+				        {"3+ orders"}
+				    }
+				)
+				
+				```
+
+	annotation PBI_Id = d3cd24ba62ae4bf4b0c11c0062a1038f
+

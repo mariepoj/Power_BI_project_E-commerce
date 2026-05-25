@@ -1,0 +1,104 @@
+table Geolocation
+	isHidden
+	lineageTag: 6debba22-c859-498a-a47f-5d55d2a1faaf
+
+	column geolocation_zip_code_prefix
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a1a2579f-9d37-4d05-b840-9826bc2a0c45
+		summarizeBy: sum
+		sourceColumn: geolocation_zip_code_prefix
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_lat
+		dataType: double
+		isHidden
+		lineageTag: aa3b606a-c195-4424-b7bd-e6b88ed02890
+		summarizeBy: sum
+		sourceColumn: geolocation_lat
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column geolocation_lng
+		dataType: double
+		isHidden
+		lineageTag: 27cd69f9-e771-448e-a996-3b834bf919c3
+		summarizeBy: sum
+		sourceColumn: geolocation_lng
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column geolocation_city
+		dataType: string
+		isHidden
+		lineageTag: cec71100-b162-4e63-b394-c51fdba1a99d
+		summarizeBy: none
+		sourceColumn: geolocation_city
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_state
+		dataType: string
+		isHidden
+		lineageTag: 6df1efca-98f8-4908-871d-8569856ae3d5
+		summarizeBy: none
+		sourceColumn: geolocation_state
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Geolocation = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_geolocation_dataset.csv"),[Delimiter=",", Columns=5, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Záhlaví se zvýšenou úrovní",{{"geolocation_zip_code_prefix", Int64.Type}, {"geolocation_lat", type text}, {"geolocation_lng", type text}, {"geolocation_city", type text}, {"geolocation_state", type text}}),
+				    #"Velké první písmeno každého slova" = Table.TransformColumns(#"Změněný typ",{{"geolocation_city", Text.Proper, type text}}),
+				    #"Nahrazená hodnota" = Table.ReplaceValue(#"Velké první písmeno každého slova","ã","a",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota1" = Table.ReplaceValue(#"Nahrazená hodnota","é","e",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota2" = Table.ReplaceValue(#"Nahrazená hodnota1","í","i",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota3" = Table.ReplaceValue(#"Nahrazená hodnota2","ó","o",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota4" = Table.ReplaceValue(#"Nahrazená hodnota3","â","a",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Filtrované řádky" = Table.SelectRows(#"Nahrazená hodnota4", each true),
+				    #"Nahrazená hodnota5" = Table.ReplaceValue(#"Filtrované řádky","'"," ",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota6" = Table.ReplaceValue(#"Nahrazená hodnota5","-"," ",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota7" = Table.ReplaceValue(#"Nahrazená hodnota6","ü","u",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota8" = Table.ReplaceValue(#"Nahrazená hodnota7","ç","c",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota9" = Table.ReplaceValue(#"Nahrazená hodnota8","á","a",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota10" = Table.ReplaceValue(#"Nahrazená hodnota9","ú","u",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota11" = Table.ReplaceValue(#"Nahrazená hodnota10","à","a",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota12" = Table.ReplaceValue(#"Nahrazená hodnota11","Ç","C",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota13" = Table.ReplaceValue(#"Nahrazená hodnota12","ù","u",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota14" = Table.ReplaceValue(#"Nahrazená hodnota13","ô","o",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota15" = Table.ReplaceValue(#"Nahrazená hodnota14","...","",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota16" = Table.ReplaceValue(#"Nahrazená hodnota15","ê","e",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota17" = Table.ReplaceValue(#"Nahrazená hodnota16","Palmeira Doeste","Palmeira D Oeste",Replacer.ReplaceText,{"geolocation_city"}),
+				    #"Nahrazená hodnota18" = Table.ReplaceValue(#"Nahrazená hodnota17",".",",",Replacer.ReplaceText,{"geolocation_lat"}),
+				    #"Změněný typ1" = Table.TransformColumnTypes(#"Nahrazená hodnota18",{{"geolocation_lat", type number}}),
+				    #"Nahrazená hodnota19" = Table.ReplaceValue(#"Změněný typ1",".",",",Replacer.ReplaceText,{"geolocation_lng"}),
+				    #"Změněný typ2" = Table.TransformColumnTypes(#"Nahrazená hodnota19",{{"geolocation_lng", type number}})
+				in
+				    #"Změněný typ2"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

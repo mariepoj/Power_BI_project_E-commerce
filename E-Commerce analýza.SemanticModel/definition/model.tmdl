@@ -1,0 +1,36 @@
+model Model
+	culture: cs-CZ
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: cs-CZ
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Customers","Geolocation","Order_Items","Order_Payments","Order_Reviews","Orders","Products","Sellers","product_category_name_translation","Geolocation_Deduplicated"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Customers
+ref table Geolocation
+ref table Order_Items
+ref table DateTableTemplate_18360d3c-c9f2-4208-abc5-ada67cc52519
+ref table Order_Payments
+ref table Order_Reviews
+ref table LocalDateTable_195be60d-89bb-4031-a04f-78ddf8e1153b
+ref table LocalDateTable_bc00ba79-c175-48eb-a6a3-4614dc7b7e27
+ref table Orders
+ref table LocalDateTable_179ac232-f28e-4aff-b126-2cc2b3809b69
+ref table LocalDateTable_79226f83-8c3b-40d2-95eb-4c3e4d6b2b8c
+ref table LocalDateTable_dfa7373b-6a44-4476-babd-27fbb5a44e31
+ref table Products
+ref table Sellers
+ref table product_category_name_translation
+ref table Calendar
+ref table Geolocation_Deduplicated
+ref table LocalDateTable_6853a356-f004-4d07-bf50-7cb248402f1f
+ref table 'Customer Segments'
+
+ref cultureInfo cs-CZ
+

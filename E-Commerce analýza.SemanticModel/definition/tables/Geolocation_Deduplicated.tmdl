@@ -1,0 +1,70 @@
+table Geolocation_Deduplicated
+	lineageTag: 4b0a47c4-e315-4a95-a3f2-8350eb1a7eef
+
+	column geolocation_zip_code_prefix
+		dataType: int64
+		formatString: 0
+		lineageTag: 7374beb0-8471-404e-a7ce-140ed3d1fadd
+		summarizeBy: none
+		sourceColumn: geolocation_zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column Avg_Lat
+		dataType: double
+		lineageTag: a513d8e9-0a08-4624-a12d-c17e8a3d7e99
+		summarizeBy: none
+		sourceColumn: Avg_Lat
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Avg_Lng
+		dataType: double
+		lineageTag: 9b0d9641-31c9-4306-93fc-c5a6d8716d83
+		summarizeBy: none
+		sourceColumn: Avg_Lng
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column State
+		dataType: string
+		lineageTag: 5d9cc3b4-2461-4a8d-9edb-f5eee167adbd
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 982f9538-efe5-4f85-9839-84e53a85c058
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Geolocation_Deduplicated = m
+		mode: import
+		source =
+				let
+				    Source = Geolocation,
+				    Grouped = Table.Group(
+				        Source,
+				        {"geolocation_zip_code_prefix"},
+				        {
+				            {"Avg_Lat", each List.Average([geolocation_lat]), type number},
+				            {"Avg_Lng", each List.Average([geolocation_lng]), type number},
+				            {"State", each List.First([geolocation_state]), type text},
+				            {"City", each List.First([geolocation_city]), type text}
+				        }
+				    )
+				in
+				    Grouped
+
+	annotation PBI_NavigationStepName = Navigace
+
+	annotation PBI_ResultType = Table
+

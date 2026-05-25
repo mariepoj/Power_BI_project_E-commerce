@@ -1,0 +1,143 @@
+table Order_Items
+	lineageTag: b73aa086-e080-42c5-abbd-f7e1b249f936
+
+	measure 'Avg Delivery Time 2' =
+			
+			AVERAGEX(
+			    Order_Items,
+			    RELATED(Orders[delivery_days])
+			)
+		lineageTag: 6304af48-8fab-4432-b4eb-f1eb26801c31
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column order_id
+		dataType: string
+		lineageTag: e59e331f-b5c5-42e9-8cd6-1b026f006108
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: string
+		lineageTag: d98da343-4dea-4bc3-a159-811150736989
+		summarizeBy: none
+		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		lineageTag: 86f0a979-aafa-42dd-a1c7-782a76fc209c
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		lineageTag: b3950d17-a867-421b-8d3f-9618c04dc95f
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_limit_date
+		dataType: string
+		lineageTag: 509db623-f1dc-4dc4-b938-bc0148283482
+		summarizeBy: none
+		sourceColumn: shipping_limit_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 2a47f611-4c11-4893-9920-8a032014d204
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Order_Items","TableItemName":"Price Bins","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column freight_value
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: ec7b0447-d780-4b34-8920-8d6bdb668c06
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Price Bins' =
+			IF(
+				ISBLANK('Order_Items'[price]),
+				BLANK(),
+				INT('Order_Items'[price] / 10) * 10
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: b47dfd36-6918-4c78-b21f-efa2b2046b25
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Order_Items"
+				          }
+				        },
+				        "Property": "price"
+				      }
+				    }
+				  ],
+				  "binningMetadata": {
+				    "binSize": {
+				      "value": 10.0,
+				      "unit": 0
+				    }
+				  }
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"o","Entity":"Order_Items"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"o"}},"Property":"price"}}],"BinItem":{"Expression":{"Floor":{"Expression":{"Column":{"Expression":{"SourceRef":{"Source":"o"}},"Property":"price"}},"Size":10.0}}}}
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Products.category_english'
+		dataType: string
+		lineageTag: 2b7b1a68-eed0-4bde-9f55-f74b26016385
+		summarizeBy: none
+		sourceColumn: Products.category_english
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Order_Items = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_order_items_dataset.csv"),[Delimiter=",", Columns=7, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"Nahrazená hodnota . na ," = Table.ReplaceValue(#"Záhlaví se zvýšenou úrovní",".",",",Replacer.ReplaceText,{"price"}),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Nahrazená hodnota . na ,",{{"price", Currency.Type}}),
+				    #"Nahrazená hodnota1 . na ," = Table.ReplaceValue(#"Změněný typ",".",",",Replacer.ReplaceText,{"freight_value"}),
+				    #"Změněný typ1" = Table.TransformColumnTypes(#"Nahrazená hodnota1 . na ,",{{"freight_value", Currency.Type}}),
+				    #"Sloučené dotazy1" = Table.NestedJoin(#"Změněný typ1", {"product_id"}, Products, {"product_id"}, "Products", JoinKind.Inner),
+				    #"Rozbalené Products" = Table.ExpandTableColumn(#"Sloučené dotazy1", "Products", {"category_english"}, {"Products.category_english"})
+				in
+				    #"Rozbalené Products"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

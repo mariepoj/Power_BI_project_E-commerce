@@ -1,0 +1,110 @@
+table Customers
+	lineageTag: 12814f71-43ed-4d39-ac17-e6706bc71494
+
+	measure 'Total Customers' = ```
+			DISTINCTCOUNT(Customers[customer_id])
+			
+			```
+		formatString: 0
+		lineageTag: 208c04c3-802a-4391-868d-61793cbdcbc2
+
+	measure 'Returning Customers' =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(Customers[customer_unique_id]),
+			    FILTER(Customers, Customers[Order Count] > 1)
+			)
+		formatString: 0
+		lineageTag: a9622b37-d35b-4152-8ce6-3765fdab4bff
+
+	measure 'New Customers' =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(Customers[customer_unique_id]),
+			    FILTER(Customers, Customers[Order Count] = 1)
+			)
+		formatString: 0
+		lineageTag: 6c780849-4615-4517-acaf-04acd37e2fe4
+
+	measure 'Avg Orders per Customer' = ```
+			
+			AVERAGEX(Customers, Customers[Order Count])
+			
+			```
+		lineageTag: 5c7bc497-ec40-42a4-8f72-89b243825d4f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column customer_id
+		dataType: string
+		lineageTag: 3088f3bb-703d-48ee-94d6-2b88501d2d6d
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: 3c1c6d35-eac6-4c60-b78f-ebed830befd0
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_zip_code_prefix
+		dataType: int64
+		formatString: 0
+		lineageTag: eabae139-cb60-4758-a61a-fbf89dbb4db6
+		summarizeBy: none
+		sourceColumn: customer_zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_city
+		dataType: string
+		lineageTag: 633b2cfb-c20c-4f59-b5fd-ffa366f26484
+		summarizeBy: none
+		sourceColumn: customer_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		lineageTag: 3daac41c-3c2a-43f9-89e6-3b6463de11f9
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Count' = ```
+			
+			CALCULATE(
+			    COUNTROWS(Orders),
+			    FILTER(
+			        Orders,
+			        Orders[customer_unique_id] = Customers[customer_unique_id]
+			    )
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 199b9d7b-09bc-405e-86fa-e8e2cadb193a
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_customers_dataset.csv"),[Delimiter=",", Columns=5, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Záhlaví se zvýšenou úrovní",{{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_zip_code_prefix", Int64.Type}, {"customer_city", type text}, {"customer_state", type text}}),
+				    #"Velké první písmeno každého slova" = Table.TransformColumns(#"Změněný typ",{{"customer_city", Text.Proper, type text}})
+				in
+				    #"Velké první písmeno každého slova"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

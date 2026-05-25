@@ -1,0 +1,230 @@
+table Products
+	lineageTag: a4879324-a707-4726-96a9-b855099b2d7f
+
+	measure 'Total Products' = DISTINCTCOUNT(Products[product_id])
+		formatString: 0
+		lineageTag: ad36912b-2d2e-40fd-b037-c1260aa39201
+
+		changedProperty = IsHidden
+
+	measure 'Total Categories' = ```
+			DISTINCTCOUNT(Products[category_en])
+			
+			```
+		formatString: 0
+		lineageTag: 4ced0b92-a152-4beb-88a9-c5a2f2ce5149
+
+		changedProperty = IsHidden
+
+	measure 'Best Selling Product' =
+			
+			CALCULATE(
+			    SELECTEDVALUE(Products[product_id]),
+			    TOPN(1, SUMMARIZE(Products, Products[product_id], "Sales", [Total Sales]), [Total Sales], DESC)
+			)
+		lineageTag: ec29d039-3bf7-4361-85a2-802e12333691
+
+		changedProperty = IsHidden
+
+	measure 'Total Sales' =
+			
+			SUM(Order_Items[price])
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 504ff8bd-efbd-4781-8c27-051feac14182
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Best Selling Category' =
+			
+			CALCULATE(
+			    SELECTEDVALUE(Products[category_en]),
+			    TOPN(1, SUMMARIZE(Products, Products[category_en], "Sales", [Total Sales]), [Total Sales], DESC)
+			)
+		lineageTag: b636ac63-dd1f-4e9b-8a3d-bbd030ebb735
+
+		changedProperty = IsHidden
+
+	measure 'Product Rank' =
+			
+			RANKX(
+			    ALL(Products[product_id]),
+			    [Total Sales],
+			    ,
+			    DESC
+			)
+		formatString: 0
+		lineageTag: 5c11b34e-adcd-4e78-b5a1-9fa9f32c10d5
+
+		changedProperty = IsHidden
+
+	measure 'Top 10 Products Flag' =
+			
+			IF([Product Rank] <= 10, 1)
+		formatString: 0
+		lineageTag: b7532e69-9ca6-4060-9c2c-f1f75b02cd68
+
+		changedProperty = IsHidden
+
+	measure 'Quantity Sold' =
+			
+			COUNTROWS(Order_Items)
+		formatString: 0
+		lineageTag: 94824913-74c4-49fb-84a6-6c8281372c54
+
+		changedProperty = IsHidden
+
+	column product_id
+		dataType: string
+		lineageTag: 1bfe3138-2900-4e5e-8f60-3bc87d03567d
+		summarizeBy: none
+		sourceColumn: product_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name
+		dataType: string
+		lineageTag: 4724b87c-41f2-4c73-840e-94216eb1c395
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_name_lenght
+		dataType: int64
+		formatString: 0
+		lineageTag: d0bdb5ee-7b4b-4060-b85f-65db8d4869e9
+		summarizeBy: sum
+		sourceColumn: product_name_lenght
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_description_lenght
+		dataType: int64
+		formatString: 0
+		lineageTag: 6681e15e-5ffb-4ed9-9d6b-9402f2df323c
+		summarizeBy: sum
+		sourceColumn: product_description_lenght
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_photos_qty
+		dataType: int64
+		formatString: 0
+		lineageTag: df69e696-757c-4e62-aa3e-c0e1383fb004
+		summarizeBy: sum
+		sourceColumn: product_photos_qty
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_weight_g
+		dataType: int64
+		formatString: 0
+		lineageTag: faa28937-1290-470e-b442-af85f7c3066b
+		summarizeBy: sum
+		sourceColumn: product_weight_g
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_length_cm
+		dataType: int64
+		formatString: 0
+		lineageTag: 2e320ae4-4158-423f-8d1c-239ed6daa203
+		summarizeBy: sum
+		sourceColumn: product_length_cm
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_height_cm
+		dataType: int64
+		formatString: 0
+		lineageTag: c76fef7d-9816-44d1-ab0c-96ebb43b0d78
+		summarizeBy: sum
+		sourceColumn: product_height_cm
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_width_cm
+		dataType: int64
+		formatString: 0
+		lineageTag: 69692047-bda1-419b-8fb5-55e94f40539d
+		summarizeBy: sum
+		sourceColumn: product_width_cm
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category_en =
+			
+			RELATED('product_category_name_translation'[product_category_name_english])
+		lineageTag: 9e739c89-6257-41f3-ab11-c938d46dd0aa
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column category_english
+		dataType: string
+		lineageTag: 451dfec7-327c-4bc9-bab2-05a8087add45
+		summarizeBy: none
+		sourceColumn: category_english
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_label
+		dataType: string
+		lineageTag: ca4d70bb-6ef0-4411-b97f-279c9148bb95
+		summarizeBy: none
+		sourceColumn: product_label
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Products = m
+		mode: import
+		source =
+				let
+				    Zdroj = Csv.Document(File.Contents("C:\Users\marie\Documents\Datová analytika\brazilian e-commerce\olist_products_dataset.csv"),[Delimiter=",", Columns=9, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Záhlaví se zvýšenou úrovní" = Table.PromoteHeaders(Zdroj, [PromoteAllScalars=true]),
+				    #"Změněný typ" = Table.TransformColumnTypes(#"Záhlaví se zvýšenou úrovní",{{"product_id", type text}, {"product_category_name", type text}, {"product_name_lenght", Int64.Type}, {"product_description_lenght", Int64.Type}, {"product_photos_qty", Int64.Type}, {"product_weight_g", Int64.Type}, {"product_length_cm", Int64.Type}, {"product_height_cm", Int64.Type}, {"product_width_cm", Int64.Type}}),
+				
+				    #"Odstraněné prázdné kategorie" =
+				        Table.SelectRows(#"Změněný typ", each ([product_category_name] <> "")),
+				    #"Sloučené dotazy" = Table.NestedJoin(#"Odstraněné prázdné kategorie", {"product_category_name"}, product_category_name_translation, {"product_category_name"}, "product_category_name_translation", JoinKind.LeftOuter),
+				    #"Rozbalené product_category_name_translation" = Table.ExpandTableColumn(#"Sloučené dotazy", "product_category_name_translation", {"product_category_name_english"}, {"product_category_name_translation.product_category_name_english"}),
+				    #"Přejmenované sloupce" = Table.RenameColumns(#"Rozbalené product_category_name_translation",{{"product_category_name_translation.product_category_name_english", "category_en"}}),
+				    #"Přidané: Vlastní" = Table.AddColumn(#"Přejmenované sloupce", "Vlastní", each Text.Start([product_id], 6) & " – " & [category_en]),
+				    #"Přejmenované sloupce1" = Table.RenameColumns(#"Přidané: Vlastní",{{"Vlastní", "product_label"}, {"category_en", "category_english"}}),
+				    #"Filtrované řádky" = Table.SelectRows(#"Přejmenované sloupce1", each ([category_english] <> null and [category_english] <> "")),
+				    #"Filtrované řádky1" = Table.SelectRows(#"Filtrované řádky", each [product_label] <> null and [product_label] <> "")
+				in
+				    #"Filtrované řádky1"
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigace
+

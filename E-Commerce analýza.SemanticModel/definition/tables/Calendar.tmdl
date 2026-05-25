@@ -1,0 +1,33 @@
+table Calendar
+	lineageTag: ae40785a-8239-44e7-88e2-f335a6c60a23
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: Short Date
+		lineageTag: ff8564fd-a55f-4c06-b232-ef729a55f436
+		summarizeBy: none
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year = YEAR(Calendar[Date])
+		formatString: 0
+		lineageTag: 8453897d-fb01-4772-9ee9-5d44c1efde3e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendar = calculated
+		mode: import
+		source =
+				
+				CALENDAR(
+				    DATE(2016,9,15),
+				    DATE(2018,8,29)
+				)
+
+	annotation PBI_Id = 0e01d5dcd4ba4cbd95f64b6d97e390c8
+
